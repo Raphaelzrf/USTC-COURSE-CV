@@ -48,6 +48,7 @@ The hyperparameters and techniques we choose to tune and exlplore are as follows
 - Batch normalization: True, False
 - Regularization: L1, L2, None
 - Dropout: True, False
+- Data Augmentation: True, False
 
 Next, we will explain why we choose these hyperparameters and techniques to tune and explore and how it affects the performance of the model.
 
@@ -142,6 +143,17 @@ Dropout is a technique to randomly set a fraction of the input units to zero dur
 
 Using dropout leads to better generalization, as shown by higher validation and test accuracy, even though training accuracy drops. Without dropout, the model overfits the training set, achieving higher train accuracy but lower performance on unseen data. This is likely due to the model memorizing the training data rather than learning generalizable patterns. Therefore, we choose to use dropout in our model.
 
+#### Data Augmentation
+
+Data augmentation is a technique to artificially increase the size of the training dataset by applying random transformations to the images. We choose to explore two options: True and False.
+
+| Data Augmentation | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| False |0.8472 ± 0.0010|0.8638 ± 0.0023|0.8604 ± 0.0009|
+| True |0.7542 ± 0.0011|0.8599 ± 0.0033|0.8560 ± 0.0009|
+
+In this experiment, the model without data augmentation performed slightly better, indicating that the existing data augmentation strategy may not be ideal or too aggressive, resulting in increased training difficulty but limited generalization benefits.
+
 ### 2.2 CNN TODO: lch
 
 ### 2.3 ResNet TODO: lch
@@ -150,11 +162,24 @@ Using dropout leads to better generalization, as shown by higher validation and 
 
 ### 3.1 MLP
 
+
+
 The result for each fold in 5-fold cross validation is similar, so we only show the result of the first fold.
 
 #### 3.1.1 training loss, testing loss and testing accuracy
 
 
+The accuracy of the best model on test set is 0.8614
+![](images/2025-05-07-17-17-24.png)
+![](images/2025-05-07-17-17-40.png)
+
+我们可以看到，训练集的loss在前面几轮下降很快，之后趋于平稳，说明模型已经收敛。测试集的loss也在前面几轮下降很快，之后趋于平稳，说明模型没有过拟合。我们采用早停法获得的最优模型在测试集上的准确率为0.8614，说明模型的泛化能力很好。并且我们发现，训练集的loss始终高于测试集的loss，这是因为我们采用了dropout和batch normalization等技术来防止过拟合，这会导致模型在训练时并没有发挥出全部的能力，从而导致训练集的loss高于测试集的loss。
+
+#### 3.1.2 The predicted results of the best model on test set
+
+![](images/2025-05-07-17-25-11.png)
+
+由上图可以看出，模型在测试集上的预测结果是比较好的。能准确地预测出大部分的字母和数字。但是对于一些相近的字母和数字，比如‘9’和‘q’，模型的预测结果是错误的。这是因为这两个字母和数字在形状上非常相似，模型很难区分它们。这也是合理的。
 
 ### 3.2 CNN TODO: lch
 
