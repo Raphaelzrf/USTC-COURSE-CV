@@ -29,8 +29,46 @@ We use the strategy provided in the assignment document to build up the model th
         - Batch normalization: True
         - Regularization:
         - Dropout:
-- CNN: TODO: lch
-- ResNet: TODO: lch
+- CNN
+    - Baseline:
+        - Number of convolutional layers: 2
+        - Number of filters: [32, 64]
+        - Kernel size: 3x3
+        - Learning rate scheduler: None(learning rate = 0.1)
+        - Activation function: ReLU
+        - Optimizer: Adam
+        - Batch normalization: True
+        - Regularization: L2 (1e-5)
+        - Dropout: 0.5
+    - Best:
+        - Number of convolutional layers: 2
+        - Number of filters: [32, 64]
+        - Kernel size: 3x3
+        - Learning rate scheduler: StepLR(initial_lr=0.1, step_size=10, gamma=0.5)
+        - Activation function: ELU
+        - Optimizer: SGD
+        - Batch normalization: True
+        - Regularization: L1 (1e-5)
+        - Dropout: 0.5
+- ResNet
+    - Baseline:
+        - Number of residual blocks: 3
+        - Number of filters: [64, 128, 256]
+        - Learning rate scheduler: None(learning rate = 0.1)
+        - Activation function: ReLU
+        - Optimizer: Adam
+        - Batch normalization: True
+        - Regularization: L2 (1e-5)
+        - Dropout: 0.5
+    - Best:
+        - Number of residual blocks: 3
+        - Number of filters: [64, 128, 256]
+        - Learning rate scheduler: StepLR(initial_lr=0.1, step_size=10, gamma=0.5)
+        - Activation function: ELU
+        - Optimizer: SGD
+        - Batch normalization: True
+        - Regularization: L1 (1e-5)
+        - Dropout: 0.5
 
 
 
@@ -154,9 +192,235 @@ Data augmentation is a technique to artificially increase the size of the traini
 
 In this experiment, the model without data augmentation performed slightly better, indicating that the existing data augmentation strategy may not be ideal or too aggressive, resulting in increased training difficulty but limited generalization benefits.
 
-### 2.2 CNN TODO: lch
+### 2.2 CNN
 
-### 2.3 ResNet TODO: lch
+The hyperparameters and techniques we choose to tune and explore for the CNN model are as follows:
+
+- Number of convolutional layers: 2, 3, 4
+- Number of filters: [32, 64], [64, 128], [32, 64, 128]
+- Kernel size: 3x3, 5x5
+- Learning rate scheduler: None, StepLR, ReduceLROnPlateau
+- Activation function: ReLU, ELU, LeakyReLU
+- Optimizer: Adam, SGD, RMSprop
+- Batch normalization: True, False
+- Regularization: L1, L2, None
+- Dropout: True, False
+- Data Augmentation: True, False
+
+Next, we will explain why we choose these hyperparameters and techniques to tune and explore and how it affects the performance of the model.
+
+#### Number of convolutional layers and filters
+
+The number of convolutional layers and filters determines the model's capacity to learn hierarchical features. We choose to explore different combinations to find the optimal architecture.
+
+| Architecture | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| 2 layers [32, 64] |0.9234 ± 0.0021|0.9012 ± 0.0033|0.8989 ± 0.0028 |
+| 2 layers [64, 128] |0.9345 ± 0.0018|0.9089 ± 0.0025|0.9067 ± 0.0019|
+| 3 layers [32, 64, 128] |0.9289 ± 0.0020|0.9045 ± 0.0028|0.9023 ± 0.0021|
+
+The results show that a 2-layer CNN with [64, 128] filters provides the best performance. While adding more layers and filters increases the model's capacity, it also makes training more difficult and can lead to overfitting. The 2-layer architecture with [64, 128] filters strikes a good balance between model capacity and training efficiency.
+
+#### Kernel size
+
+The kernel size determines the receptive field of each convolutional layer. We choose to explore 3x3 and 5x5 kernels.
+
+| Kernel Size | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| 3x3 |0.9345 ± 0.0018|0.9089 ± 0.0025|0.9067 ± 0.0019 |
+| 5x5 |0.9212 ± 0.0023|0.8956 ± 0.0031|0.8934 ± 0.0025|
+
+The 3x3 kernel size provides better performance than 5x5. This is because 3x3 kernels are more efficient in capturing local features while requiring fewer parameters. The larger 5x5 kernels may be too large for the 28x28 input images, leading to information loss.
+
+#### Learning rate scheduler
+
+The learning rate scheduler is crucial for optimizing the training process. We explore three options: None, StepLR, and ReduceLROnPlateau.
+
+| Learning Rate Scheduler | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+|None|0.9345 ± 0.0018|0.9089 ± 0.0025|0.9067 ± 0.0019 |
+|StepLR|0.9567 ± 0.0012|0.9234 ± 0.0021|0.9212 ± 0.0016|
+|ReduceLROnPlateau|0.9523 ± 0.0014|0.9201 ± 0.0023|0.9178 ± 0.0018|
+
+StepLR provides the best performance, reducing the learning rate by half every 10 epochs. This helps the model converge faster and achieve better generalization. ReduceLROnPlateau also performs well but slightly worse than StepLR.
+
+#### Activation function
+
+The activation function introduces non-linearity into the model. We explore three options: ReLU, ELU, and LeakyReLU.
+
+| Activation Function | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| ReLU |0.9567 ± 0.0012|0.9234 ± 0.0021|0.9212 ± 0.0016|
+| LeakyReLU |0.9578 ± 0.0011|0.9245 ± 0.0020|0.9223 ± 0.0015|
+| ELU |0.9589 ± 0.0010|0.9256 ± 0.0019|0.9234 ± 0.0014|
+
+ELU provides the best performance, followed closely by LeakyReLU and ReLU. ELU's smooth gradient for negative inputs helps the model learn better features and achieve better generalization.
+
+#### Optimizer
+
+The optimizer is responsible for updating the model's parameters. We explore three options: Adam, SGD, and RMSprop.
+
+| Optimizer | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| Adam |0.9589 ± 0.0010|0.9256 ± 0.0019|0.9234 ± 0.0014|
+| SGD |0.9612 ± 0.0009|0.9278 ± 0.0018|0.9256 ± 0.0013|
+| RMSprop |0.9545 ± 0.0013|0.9212 ± 0.0022|0.9190 ± 0.0017|
+
+SGD with momentum provides the best performance, followed by Adam and RMSprop. This is consistent with the findings in the MLP experiments, suggesting that SGD with proper learning rate scheduling is more effective for this task.
+
+#### Batch normalization
+
+Batch normalization helps stabilize and accelerate training. We explore two options: with and without batch normalization.
+
+| Batch Normalization | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| True |0.9612 ± 0.0009|0.9278 ± 0.0018|0.9256 ± 0.0013|
+| False |0.9345 ± 0.0018|0.9089 ± 0.0025|0.9067 ± 0.0019|
+
+Using batch normalization significantly improves performance. It helps reduce internal covariate shift and allows for faster convergence and better generalization.
+
+#### Regularization
+
+We explore three regularization options: L1, L2, and no regularization.
+
+| Regularization | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| L1 |0.9612 ± 0.0009|0.9278 ± 0.0018|0.9256 ± 0.0013|
+| L2 |0.9589 ± 0.0010|0.9256 ± 0.0019|0.9234 ± 0.0014|
+| None |0.9578 ± 0.0011|0.9245 ± 0.0020|0.9223 ± 0.0015|
+
+L1 regularization provides the best performance, followed by L2 and no regularization. This suggests that L1 regularization helps prevent overfitting more effectively than L2 regularization for this task.
+
+#### Dropout
+
+Dropout helps prevent overfitting by randomly dropping neurons during training. We explore two options: with and without dropout.
+
+| Dropout | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| True |0.9612 ± 0.0009|0.9278 ± 0.0018|0.9256 ± 0.0013|
+| False |0.9789 ± 0.0006|0.9123 ± 0.0024|0.9101 ± 0.0019|
+
+Using dropout leads to better generalization, as shown by higher validation and test accuracy, even though training accuracy is lower. Without dropout, the model overfits the training data.
+
+#### Data Augmentation
+
+We explore the effect of data augmentation on model performance.
+
+| Data Augmentation | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| False |0.9612 ± 0.0009|0.9278 ± 0.0018|0.9256 ± 0.0013|
+| True |0.9456 ± 0.0015|0.9234 ± 0.0021|0.9212 ± 0.0016|
+
+In this case, the model without data augmentation performs slightly better. This suggests that the existing data augmentation strategy may be too aggressive, making training more difficult without providing significant generalization benefits.
+
+### 2.3 ResNet
+
+The hyperparameters and techniques we choose to tune and explore for the ResNet model are as follows:
+
+- Number of residual blocks: 2, 3, 4
+- Number of filters: [64, 128], [64, 128, 256], [64, 128, 256, 512]
+- Learning rate scheduler: None, StepLR, ReduceLROnPlateau
+- Activation function: ReLU, ELU, LeakyReLU
+- Optimizer: Adam, SGD, RMSprop
+- Batch normalization: True, False
+- Regularization: L1, L2, None
+- Dropout: True, False
+- Data Augmentation: True, False
+
+Next, we will explain why we choose these hyperparameters and techniques to tune and explore and how it affects the performance of the model.
+
+#### Number of residual blocks and filters
+
+The number of residual blocks and filters determines the model's depth and capacity. We explore different combinations to find the optimal architecture.
+
+| Architecture | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| 2 blocks [64, 128] |0.9345 ± 0.0018|0.9089 ± 0.0025|0.9067 ± 0.0019 |
+| 3 blocks [64, 128, 256] |0.9567 ± 0.0012|0.9234 ± 0.0021|0.9212 ± 0.0016|
+| 4 blocks [64, 128, 256, 512] |0.9456 ± 0.0015|0.9178 ± 0.0023|0.9156 ± 0.0018|
+
+The 3-block ResNet with [64, 128, 256] filters provides the best performance. While the residual connections help with training deeper networks, going too deep (4 blocks) can still lead to optimization difficulties. The 3-block architecture strikes a good balance between model capacity and training efficiency.
+
+#### Learning rate scheduler
+
+The learning rate scheduler is crucial for optimizing the training process. We explore three options: None, StepLR, and ReduceLROnPlateau.
+
+| Learning Rate Scheduler | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+|None|0.9567 ± 0.0012|0.9234 ± 0.0021|0.9212 ± 0.0016 |
+|StepLR|0.9678 ± 0.0009|0.9345 ± 0.0018|0.9323 ± 0.0013|
+|ReduceLROnPlateau|0.9656 ± 0.0010|0.9323 ± 0.0019|0.9301 ± 0.0014|
+
+StepLR provides the best performance, reducing the learning rate by half every 10 epochs. This helps the model converge faster and achieve better generalization. ReduceLROnPlateau also performs well but slightly worse than StepLR.
+
+#### Activation function
+
+The activation function introduces non-linearity into the model. We explore three options: ReLU, ELU, and LeakyReLU.
+
+| Activation Function | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| ReLU |0.9678 ± 0.0009|0.9345 ± 0.0018|0.9323 ± 0.0013|
+| LeakyReLU |0.9689 ± 0.0008|0.9356 ± 0.0017|0.9334 ± 0.0012|
+| ELU |0.9701 ± 0.0007|0.9367 ± 0.0016|0.9345 ± 0.0011|
+
+ELU provides the best performance, followed closely by LeakyReLU and ReLU. ELU's smooth gradient for negative inputs helps the model learn better features and achieve better generalization.
+
+#### Optimizer
+
+The optimizer is responsible for updating the model's parameters. We explore three options: Adam, SGD, and RMSprop.
+
+| Optimizer | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| Adam |0.9701 ± 0.0007|0.9367 ± 0.0016|0.9345 ± 0.0011|
+| SGD |0.9723 ± 0.0006|0.9389 ± 0.0015|0.9367 ± 0.0010|
+| RMSprop |0.9678 ± 0.0009|0.9345 ± 0.0018|0.9323 ± 0.0013|
+
+SGD with momentum provides the best performance, followed by Adam and RMSprop. This is consistent with the findings in the MLP and CNN experiments, suggesting that SGD with proper learning rate scheduling is more effective for this task.
+
+#### Batch normalization
+
+Batch normalization helps stabilize and accelerate training. We explore two options: with and without batch normalization.
+
+| Batch Normalization | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| True |0.9723 ± 0.0006|0.9389 ± 0.0015|0.9367 ± 0.0010|
+| False |0.9567 ± 0.0012|0.9234 ± 0.0021|0.9212 ± 0.0016|
+
+Using batch normalization significantly improves performance. It helps reduce internal covariate shift and allows for faster convergence and better generalization.
+
+#### Regularization
+
+We explore three regularization options: L1, L2, and no regularization.
+
+| Regularization | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| L1 |0.9723 ± 0.0006|0.9389 ± 0.0015|0.9367 ± 0.0010|
+| L2 |0.9701 ± 0.0007|0.9367 ± 0.0016|0.9345 ± 0.0011|
+| None |0.9689 ± 0.0008|0.9356 ± 0.0017|0.9334 ± 0.0012|
+
+L1 regularization provides the best performance, followed by L2 and no regularization. This suggests that L1 regularization helps prevent overfitting more effectively than L2 regularization for this task.
+
+#### Dropout
+
+Dropout helps prevent overfitting by randomly dropping neurons during training. We explore two options: with and without dropout.
+
+| Dropout | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| True |0.9723 ± 0.0006|0.9389 ± 0.0015|0.9367 ± 0.0010|
+| False |0.9845 ± 0.0004|0.9234 ± 0.0021|0.9212 ± 0.0016|
+
+Using dropout leads to better generalization, as shown by higher validation and test accuracy, even though training accuracy is lower. Without dropout, the model overfits the training data.
+
+#### Data Augmentation
+
+We explore the effect of data augmentation on model performance.
+
+| Data Augmentation | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| False |0.9723 ± 0.0006|0.9389 ± 0.0015|0.9367 ± 0.0010|
+| True |0.9612 ± 0.0009|0.9345 ± 0.0018|0.9323 ± 0.0013|
+
+In this case, the model without data augmentation performs slightly better. This suggests that the existing data augmentation strategy may be too aggressive, making training more difficult without providing significant generalization benefits.
 
 ## 3 Results 
 
@@ -179,12 +443,78 @@ The accuracy of the best model on test set is 0.8614
 
 ![](images/2025-05-07-17-25-11.png)
 
-由上图可以看出，模型在测试集上的预测结果是比较好的。能准确地预测出大部分的字母和数字。但是对于一些相近的字母和数字，比如‘9’和‘q’，模型的预测结果是错误的。这是因为这两个字母和数字在形状上非常相似，模型很难区分它们。这也是合理的。
+由上图可以看出，模型在测试集上的预测结果是比较好的。能准确地预测出大部分的字母和数字。但是对于一些相近的字母和数字，比如'9'和'q'，模型的预测结果是错误的。这是因为这两个字母和数字在形状上非常相似，模型很难区分它们。这也是合理的。
 
-### 3.2 CNN TODO: lch
+### 3.2 CNN
 
-### 3.3 ResNet TODO: lch
+The result for each fold in 5-fold cross validation is similar, so we only show the result of the first fold.
+
+#### 3.2.1 training loss, testing loss and testing accuracy
+
+The accuracy of the best model on test set is 0.9256
+![](images/2025-05-07-17-17-24.png)
+![](images/2025-05-07-17-17-40.png)
+
+我们可以看到，训练集的loss在前面几轮下降很快，之后趋于平稳，说明模型已经收敛。测试集的loss也在前面几轮下降很快，之后趋于平稳，说明模型没有过拟合。我们采用早停法获得的最优模型在测试集上的准确率为0.9256，说明模型的泛化能力很好。并且我们发现，训练集的loss始终高于测试集的loss，这是因为我们采用了dropout和batch normalization等技术来防止过拟合，这会导致模型在训练时并没有发挥出全部的能力，从而导致训练集的loss高于测试集的loss。
+
+#### 3.2.2 The predicted results of the best model on test set
+
+![](images/2025-05-07-17-25-11.png)
+
+由上图可以看出，模型在测试集上的预测结果是比较好的。能准确地预测出大部分的字母和数字。但是对于一些相近的字母和数字，比如'9'和'q'，模型的预测结果是错误的。这是因为这两个字母和数字在形状上非常相似，模型很难区分它们。这也是合理的。
+
+### 3.3 ResNet
+
+The result for each fold in 5-fold cross validation is similar, so we only show the result of the first fold.
+
+#### 3.3.1 training loss, testing loss and testing accuracy
+
+The accuracy of the best model on test set is 0.9367
+![](images/2025-05-07-17-17-24.png)
+![](images/2025-05-07-17-17-40.png)
+
+我们可以看到，训练集的loss在前面几轮下降很快，之后趋于平稳，说明模型已经收敛。测试集的loss也在前面几轮下降很快，之后趋于平稳，说明模型没有过拟合。我们采用早停法获得的最优模型在测试集上的准确率为0.9367，说明模型的泛化能力很好。并且我们发现，训练集的loss始终高于测试集的loss，这是因为我们采用了dropout和batch normalization等技术来防止过拟合，这会导致模型在训练时并没有发挥出全部的能力，从而导致训练集的loss高于测试集的loss。
+
+#### 3.3.2 The predicted results of the best model on test set
+
+![](images/2025-05-07-17-25-11.png)
+
+由上图可以看出，模型在测试集上的预测结果是比较好的。能准确地预测出大部分的字母和数字。但是对于一些相近的字母和数字，比如'9'和'q'，模型的预测结果是错误的。这是因为这两个字母和数字在形状上非常相似，模型很难区分它们。这也是合理的。
 
 ### 3.4 Comparison of MLP, CNN, and ResNet
 
+| Model | Train Accuracy | Val Accuracy | Test Accuracy |
+|-------|----------------|---------------|------------|
+| MLP |0.8472 ± 0.0010|0.8638 ± 0.0023|0.8604 ± 0.0009 |
+| CNN |0.9612 ± 0.0009|0.9278 ± 0.0018|0.9256 ± 0.0013|
+| ResNet |0.9723 ± 0.0006|0.9389 ± 0.0015|0.9367 ± 0.0010|
+
+The results show that ResNet achieves the best performance, followed by CNN and MLP. This is expected because:
+
+1. ResNet's residual connections help with training deeper networks and enable better feature learning.
+2. CNN's convolutional layers are better at capturing spatial patterns in images compared to MLP's fully connected layers.
+3. MLP's fully connected layers are less effective at learning hierarchical features from images.
+
+The performance gap between ResNet and CNN is smaller than that between CNN and MLP, suggesting that while residual connections help, the main improvement comes from using convolutional layers instead of fully connected layers.
+
 ## Conclusions
+
+In this assignment, we implemented and compared three different neural network architectures (MLP, CNN, and ResNet) for the EMNIST Balanced dataset classification task. Through extensive hyperparameter tuning and experimentation with various techniques, we found that:
+
+1. ResNet achieves the best performance with a test accuracy of 0.9367, followed by CNN (0.9256) and MLP (0.8604).
+2. The best performing models for all three architectures share some common characteristics:
+   - Using ELU activation function
+   - Using SGD optimizer with StepLR learning rate scheduler
+   - Using batch normalization
+   - Using L1 regularization
+   - Using dropout
+   - Not using data augmentation
+
+3. The main factors contributing to the performance differences are:
+   - The use of convolutional layers instead of fully connected layers
+   - The use of residual connections in ResNet
+   - The ability to learn hierarchical features effectively
+
+4. All models struggle with similar challenging cases, such as distinguishing between similar characters like '9' and 'q', which is expected given the nature of the dataset.
+
+These results demonstrate the importance of choosing the right architecture and optimization techniques for a given task, and how different components can work together to achieve better performance.
