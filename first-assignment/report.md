@@ -232,18 +232,21 @@ In summary, model performance improves as architectures better utilize the spati
 
 ## Conclusions
 
-### 张如凡 SA24011112
+### Reflection
 
-This project has been a valuable learning experience in understanding how different hyperparameters and training techniques impact the performance of deep learning models, particularly multilayer perceptrons (MLPs). By systematically evaluating a range of configurations, I gained deeper insights into the trade-offs between model complexity and generalization, and how elements like dropout, batch normalization, and learning rate scheduling can be strategically combined to improve robustness and performance.
+Through this project, We gained a deeper understanding of how various hyperparameters and training techniques impact the performance of deep learning models, particularly in multilayer perceptrons (MLPs), convolutional neural networks (CNNs), and ResNet architectures. By systematically evaluating different configurations, We developed a clearer sense of the trade-offs between model complexity and generalization, and learned how techniques like dropout, batch normalization, and learning rate schedulers (such as StepLR and ReduceLROnPlateau) can be strategically combined to improve robustness and performance.
 
-One key takeaway is the importance of thorough experimentation: even small changes—such as switching the activation function from ReLU to ELU or choosing StepLR over ReduceLROnPlateau—can result in noticeable improvements. I also realized that adaptive optimizers like Adam, although fast and convenient, may not always yield the best test accuracy, especially when compared to well-tuned SGD.
+In studying ResNet, We realized the importance of residual connections in mitigating vanishing gradients in deeper networks, which makes ResNet easier to train and generally more accurate than traditional CNNs. At the same time, We observed that improvements in performance often come at the cost of increased training time and model complexity.
 
-If I were to redo this project, I would place greater emphasis on automating the hyperparameter search process, possibly using grid search or Bayesian optimization. Additionally, I would explore more diverse data augmentation strategies and investigate why the current augmentation approach failed to improve performance. 
+One key takeaway is the importance of thorough experimentation—even small changes, such as switching the activation function from ReLU to ELU, or replacing the optimizer from Adam to a well-tuned SGD, can lead to significant differences in results. While Adam is convenient and fast in early training stages, We found that it doesn’t always produce the best test accuracy compared to SGD in certain scenarios.
 
-### 李骋昊 SA24011041
+If We were to redo this project, We would place greater emphasis on automating the hyperparameter tuning process, possibly using grid search or Bayesian optimization. We would also explore more systematic and diverse data augmentation strategies, and investigate why the current augmentation methods failed to enhance performance. Additionally, incorporating model explainability techniques like Grad-CAM could help me better understand model decisions. Testing the models on other datasets or leveraging transfer learning would also be valuable for improving generalization.
 
-Through this project, I deepened my understanding of CNN and ResNet architectures. I learned how residual connections in ResNet help train deeper networks by avoiding vanishing gradients, leading to higher accuracy compared to traditional CNNs. I also realized that better performance often comes with increased training time and complexity.
+Overall, this project significantly improved my practical skills in PyTorch and deep learning, and laid a strong foundation for exploring more advanced models in the future.
 
-If I were to improve the project, I would focus on hyperparameter tuning, more systematic data augmentation, and applying model explainability techniques like Grad-CAM. Additionally, testing the models on other datasets or using transfer learning could enhance their generalization.
+### Team member responsibilities
 
-Overall, this project improved my practical skills in PyTorch and deep learning, and laid the groundwork for future exploration of more advanced models.
+MLP: 张如凡 SA24011112，杨昊运 SA24011145
+CNN and Resnet: 李骋昊 SA24011041, 周绍晅 SA23011112
+Summary and Comparison: All team members
+
