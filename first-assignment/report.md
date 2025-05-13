@@ -239,3 +239,11 @@ This project has been a valuable learning experience in understanding how differ
 One key takeaway is the importance of thorough experimentation: even small changes—such as switching the activation function from ReLU to ELU or choosing StepLR over ReduceLROnPlateau—can result in noticeable improvements. I also realized that adaptive optimizers like Adam, although fast and convenient, may not always yield the best test accuracy, especially when compared to well-tuned SGD.
 
 If I were to redo this project, I would place greater emphasis on automating the hyperparameter search process, possibly using grid search or Bayesian optimization. Additionally, I would explore more diverse data augmentation strategies and investigate why the current augmentation approach failed to improve performance. 
+
+### 李骋昊 SA24011041
+
+Through this project, I deepened my understanding of CNN and ResNet architectures. I learned how residual connections in ResNet help train deeper networks by avoiding vanishing gradients, leading to higher accuracy compared to traditional CNNs. I also realized that better performance often comes with increased training time and complexity.
+
+If I were to improve the project, I would focus on hyperparameter tuning, more systematic data augmentation, and applying model explainability techniques like Grad-CAM. Additionally, testing the models on other datasets or using transfer learning could enhance their generalization.
+
+Overall, this project improved my practical skills in PyTorch and deep learning, and laid the groundwork for future exploration of more advanced models.
