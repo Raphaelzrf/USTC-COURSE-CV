@@ -267,6 +267,7 @@ SGD with momentum provides the best performance, followed by Adam and RMSprop. T
 
 The learning rate scheduler is crucial for optimizing the training process. We explore 2 options: StepLR, and CosineAnnealingLR.
 
+
 | Learning Rate Scheduler | Test Accuracy |
 |-------|------------|
 |StepLR|89.41%|
@@ -279,7 +280,7 @@ CosineAnnealingLR performs better than StepLR because it provides smoother learn
 
 Batch normalization helps stabilize and accelerate training. We explore two options: with and without batch normalization.
 
-| Batch Normalization | Train Accuracy | Val Accuracy | Test Accuracy |
+| Batch Normalization | Test Accuracy |
 |-------|------------|
 | True |89.63%|
 | False |89.56%|
@@ -291,7 +292,7 @@ Batch normalization slightly improves model performance by normalizing layer inp
 Dropout helps prevent overfitting by randomly dropping neurons during training. We explore two options: with and without dropout.
 
 | Dropout | Test Accuracy |
-|-------|----------------|---------------|------------|
+|-------|------------|
 | True(0.5) |89.63%|
 | False |89.70%|
 
@@ -330,7 +331,7 @@ Next, we will explain why we choose these hyperparameters and techniques to tune
 The number of residual blocks and filters determines the model's depth and capacity. We explore different combinations to find the optimal architecture.
 
 | Architecture | Test Accuracy |
-|-------|----------------|---------------|------------|
+|-------|------------|
 | `[1, 2, 3]` |0.9065|
 | `[2, 2, 2]` |0.9084 |
 | `[3, 3, 3]` |0.9075|
@@ -389,7 +390,7 @@ Using batch normalization significantly improves performance. It helps reduce in
 We explore three regularization options: L1, L2, and no regularization (fix weight decay to `1e-2`).
 
 | Regularization | Test Accuracy |
-|-------|----------------|---------------|------------|
+|-------|-------------|
 | L1 |0.8913|
 | L2 |0.9078|
 | None |0.9084|
@@ -402,7 +403,7 @@ No regularization performs best, followed by L2 and L1 regularization. This sugg
 Dropout helps prevent overfitting by randomly dropping neurons during training. We explore two options: with and without dropout.
 
 | Dropout | Test Accuracy |
-|-------------------|
+|-------|-------------------|
 | True |0.9072|
 | False |0.9084|
 
