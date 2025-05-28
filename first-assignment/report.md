@@ -426,8 +426,6 @@ In this case, the model without data augmentation performs slightly better. This
 
 ### 3.1 MLP
 
-
-
 The result for each fold in 5-fold cross validation is similar, so we only show the result of the first fold.
 
 #### 3.1.1 training loss, testing loss and testing accuracy
